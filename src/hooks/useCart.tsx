@@ -26,7 +26,7 @@ interface CartContextData {
   cart: Product[];
   addProduct: (productId: number) => Promise<void>;
   removeProduct: (productId: number) => void;
-  updateProductAmount: ({ productId, amount }: UpdateProductAmount) => void;
+  updateProductAmount: ({ productId, amount }: UpdateProductAmount) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextData>({} as CartContextData);
@@ -106,7 +106,23 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   }: UpdateProductAmount) => {
     try {
       
+      if(amount <= 0) return;
+
       const productIsInCart = cart.find((x) => x.id === productId);
+
+      if(productIsInCart){
+
+        const stock = await getStock(productId);
+
+        if(amount <= stock.amount){
+          productIsInCart.amount = amount;
+          setCart([...cart]);
+        }
+        else{
+          toast.error('Quantidade solicitada fora de estoque');
+        }
+
+      }
 
     } catch {
       toast.error('Erro na alteração de quantidade do produto');
