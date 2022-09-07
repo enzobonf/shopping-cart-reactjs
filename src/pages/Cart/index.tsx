@@ -53,8 +53,8 @@ const Cart = (): JSX.Element => {
     });
   }
 
-  function handleRemoveProduct(productId: number) {
-    removeProduct(productId);
+  async function handleRemoveProduct(productId: number) {
+    await removeProduct(productId);
   }
 
   return (

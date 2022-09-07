@@ -1,6 +1,7 @@
 {
   "name": "criando_um_hook_de_carrinho_de_compras",
   "version": "0.1.0",
+  "homepage": "https://enzobonf.github.io/shopping-cart-reactjs",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
@@ -27,7 +28,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "json-server db.json -p 3333"
+    "server": "json-server db.json -p 3333",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "browserslist": {
     "production": [

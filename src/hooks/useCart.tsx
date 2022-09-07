@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { api } from '../services/api';
 import { Product, Stock } from '../types';
@@ -25,7 +25,7 @@ const getStock = async (productId: number): Promise<Stock> => {
 interface CartContextData {
   cart: Product[];
   addProduct: (productId: number) => Promise<void>;
-  removeProduct: (productId: number) => void;
+  removeProduct: (productId: number) => Promise<void>;
   updateProductAmount: ({ productId, amount }: UpdateProductAmount) => Promise<void>;
 }
 
@@ -42,12 +42,22 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     return [];
   });
 
+  const prevCartRef = useRef<Product[]>();
+
+  useEffect(() => {
+    prevCartRef.current = cart;
+  });
+
+  const cartPreviousValue = prevCartRef.current ?? cart;
+  
   useEffect(() => {
 
-    const cartStr = JSON.stringify(cart);
-    localStorage.setItem('@RocketShoes:cart', cartStr);
+    if(cartPreviousValue !== cart){
+      const cartStr = JSON.stringify(cart);
+      localStorage.setItem('@RocketShoes:cart', cartStr);
+    }
 
-  }, [cart]);
+  }, [cart, cartPreviousValue]);
 
   const addProduct = async (productId: number) => {
     try {
@@ -85,11 +95,19 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     }
   };
 
-  const removeProduct = (productId: number) => {
+  const removeProduct = async (productId: number) => {
     try {
       
-      const newCart = cart.filter((product) => product.id !== productId);
-      setCart([...newCart]);
+      const product = await getProduct(productId);
+
+      if(product){
+        const newCart = cart.filter((product) => product.id !== productId);
+        setCart([...newCart]);
+      }
+      else{
+        toast.error('Erro na remoção do produto');
+        return;
+      }
 
     } catch {
       toast.error('Erro na remoção do produto');
@@ -103,6 +121,13 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     try {
       
       if(amount <= 0) return;
+
+      const product = await getProduct(productId);
+
+      if(!product){
+        toast.error('Erro na alteração de quantidade do produto');
+        return;
+      }
 
       const productIsInCart = cart.find((x) => x.id === productId);
 
