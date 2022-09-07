@@ -8,11 +8,7 @@ import { useCart } from '../../hooks/useCart';
 
 const Header = (): JSX.Element => {
   const { cart } = useCart();
-  const [cartSize, setCartSize] = useState(cart.length);
-
-  useEffect(() => {
-    setCartSize(cart.length);
-  }, [cart]);
+  const cartSize = cart.length;
 
   return (
     <Container>
