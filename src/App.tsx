@@ -7,9 +7,11 @@ import GlobalStyles from './styles/global';
 import Header from './components/Header';
 import { CartProvider } from './hooks/useCart';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const App = (): JSX.Element => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={isDev ? '/' : process.env.PUBLIC_URL}>
       <CartProvider>
         <GlobalStyles />
         <Header />
