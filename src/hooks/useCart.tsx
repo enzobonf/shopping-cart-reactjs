@@ -57,8 +57,6 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       if(product){
         
         const stock = await getStock(product.id);
-        console.log(stock, product);
-
         const productIsInCart = cart.find((x) => x.id === productId);
 
         if(productIsInCart){

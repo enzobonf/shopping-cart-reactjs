@@ -49,7 +49,7 @@ const Home = (): JSX.Element => {
   }, []);
 
   async function handleAddProduct(id: number) {
-    await addProduct(id);
+    await addProduct(45);
   }
 
   return (
